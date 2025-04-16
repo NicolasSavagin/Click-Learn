@@ -1,8 +1,6 @@
 # 🖱 Click&Learn
 
-<div align="center">
-  🌐 Disponível em: [Português](#-clicklearn-em-portugu%C3%AAs) | [English](#-clicklearn-in-english)
-</div>
+📑 Leia em: [Português](#-clicklearn-em-português) | [English](#-clicklearn-in-english)
 
 ---
 
