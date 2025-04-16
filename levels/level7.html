@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level 7 - Scroll do Mouse</title>
+  <link rel="stylesheet" href="../style/levels.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: white;
+      padding: 20px;
+    }
+
+    .section {
+      height: 100vh;
+      border-bottom: 2px dashed #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    #bottom-message {
+      display: none;
+      font-size: 28px;
+      color: yellow;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+
+    .control-buttons {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .control-buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #demo-area {
+      display: none;
+      text-align: center;
+      color: yellow;
+      margin-top: 20px;
+    }
+    #next-btn {
+        display: inline-block;
+        padding: 15px 30px;
+        margin-top: 30px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #fff !important;
+        background: linear-gradient(135deg, #28a745, #218838);
+        border: none;
+        border-radius: 12px;
+        text-decoration: none;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    #next-btn:hover {
+        background: linear-gradient(135deg, #218838, #1e7e34);
+        transform: scale(1.05);
+        cursor: pointer;
+        color: #fff !important;
+    }
+
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h2>Fase 7 - Role até o fim!</h2>
+    <p>Use a rodinha do mouse (scroll) para rolar até o fim da página.</p>
+    Aperte <kbd>E</kbd> para ouvir a explicação.<br>
+    Aperte <kbd>D</kbd> para ver a demonstração.<br>
+    Ao concluir, aperte <kbd>C</kbd> para continuar.<br>
+    <div class="control-buttons">
+      <button id="speak-btn">🔊 Falar novamente</button>
+      <button id="demo-btn">🎥 Demonstração</button>
+    </div>
+    <div id="demo-area">
+      <p>Role com a rodinha do mouse até o final da página!</p>
+    </div>
+  </header>
+
+  <div class="section">Continue rolando...</div>
+  <div class="section">Ainda não é o fim...</div>
+  <div class="section">Quase lá...</div>
+
+  <div class="section" id="final-section">
+    <div>
+      <div id="bottom-message">Parabéns! Você dominou a rolagem com o mouse 🎉</div>
+      <a href="level8.html" id="next-btn">Próxima Fase</a>
+    </div>
+  </div>
+
+  <script src="../script/script.js"></script>
+  <script>
+    const bottomMsg = document.getElementById('bottom-message');
+    const nextBtn = document.getElementById('next-btn');
+    const demoArea = document.getElementById('demo-area');
+
+    const textoIntro = "Nesta fase, use a rodinha do mouse para rolar até o final da página. Quando chegar ao fim, você poderá avançar. Aperte C para ir para a próxima fase, D para ver uma demonstração ou E para ouvir esta explicação novamente.";
+
+    function speak(text) {
+      const msg = new SpeechSynthesisUtterance(text);
+      msg.lang = 'pt-BR';
+      window.speechSynthesis.speak(msg);
+    }
+
+    // Fala ao entrar
+    speak(textoIntro);
+
+    // Detecta quando chegou ao final
+    function checkScrollEnd() {
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const fullHeight = document.documentElement.scrollHeight;
+
+      if (scrollY + viewportHeight >= fullHeight - 5) {
+        speak("Muito bem! Você chegou ao final da página.");
+        bottomMsg.style.display = 'block';
+        nextBtn.style.display = 'block';
+        window.removeEventListener('scroll', checkScrollEnd);
+      }
+    }
+
+    window.addEventListener('scroll', checkScrollEnd);
+
+    ativarAtalhos({
+      textoIntro,
+      aoC: () => {
+        if (nextBtn.style.display === 'block') {
+          nextBtn.querySelector('a').click();
+        } else {
+          speak("Você precisa rolar até o final da página antes de avançar.");
+        }
+      },
+      aoD: () => {
+        demoArea.style.display = 'block';
+      },
+      aoE: () => {
+        speak(textoIntro);
+      }
+    });
+
+    // Botões visuais
+    document.getElementById('speak-btn').addEventListener('click', () => speak(textoIntro));
+    document.getElementById('demo-btn').addEventListener('click', () => demoArea.style.display = 'block');
+  </script>
+</body>
+</html>

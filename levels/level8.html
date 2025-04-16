@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level 8 - Missão Final</title>
+  <link rel="stylesheet" href="../style/levels.css">
+  <style>
+    .task {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      background-color: #1e1e1e;
+      color: white;
+    }
+    #scroll-area {
+      height: 120px;
+      overflow-y: scroll;
+      border: 2px dashed white;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    #progress-msg {
+      color: yellow;
+      font-weight: bold;
+    }
+    .green {
+      background-color: green !important;
+    }
+    /* Ajustes para garantir que o botão fique visível */
+    .control-buttons button {
+      background-color: #444; /* Cor de fundo escura */
+      color: white; /* Cor do texto */
+      border: 2px solid #fff; /* Borda branca para destacar */
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin: 5px;
+      cursor: pointer;
+    }
+
+    .control-buttons button:hover {
+      background-color: #666; /* Efeito hover para maior interatividade */
+    }
+
+    #next-btn a {
+    display: inline-block;
+    padding: 15px 30px;
+    margin-top: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff !important;
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+#next-btn a:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: scale(1.05);
+    cursor: pointer;
+    color: #fff !important;
+}
+
+  </style>
+</head>
+<body>
+    
+  <div class="container">
+    <h2>Fase 8: Missão Final!</h2>
+    <p>Conclua todas as tarefas abaixo para finalizar o treinamento.</p>
+
+    <div class="control-buttons">
+      <button id="speak-btn">🔊 Falar novamente</button>
+      <button id="demo-btn">🎥 Demonstração</button>
+    </div>
+
+    <div id="progress-msg">Progresso: 0 / 7</div>
+
+    <div class="task"><p>1. Mova o mouse até a área amarela:</p><div class="end-zone" id="end-zone" style="width: 100px; height: 100px; background: yellow;"></div></div>
+
+    <div class="task"><p>2. Clique no círculo:</p><div id="circle" style="width: 80px; height: 80px; border-radius: 50%; background-color: red;"></div></div>
+
+    <div class="task"><p>3. Clique com o <strong>botão direito</strong> aqui:</p><div id="right-click-box" style="width: 200px; height: 60px; background-color: gray; line-height: 60px; text-align: center;">Clique com o direito</div></div>
+
+    <div class="task"><p>4. Selecione a palavra abaixo:</p><p id="tech-text">Tecnologia</p></div>
+
+    <div class="task"><p>5. Arraste o quadrado para dentro da área:</p>
+      <div id="drag" draggable="true" style="width: 50px; height: 50px; background: blue;"></div>
+      <div id="drop" style="width: 200px; height: 100px; border: 2px dashed white; margin-top: 10px;"></div>
+    </div>
+
+    <div class="task"><p>6. Role até o final da área:</p>
+      <div id="scroll-area">
+        <p>Lorem ipsum dolor sit amet...</p><p>Conteúdo extra...</p>
+        <p style="margin-top: 300px;">Fim do texto.</p>
+      </div>
+    </div>
+
+    <div class="task" id="double-click-task">
+      <p>7. Dê um <strong>duplo clique</strong> neste botão:</p>
+      <button id="dbl-btn" style="padding: 10px 30px; font-size: 16px;">Duplo Clique Aqui</button>
+    </div>
+
+    <div id="demo-area" style="display:none; color: yellow;">Aqui apareceria uma animação demonstrativa.</div>
+
+    <div class="next-button" id="next-btn">
+      <a href="fim.html" id="next-btn">Finalizar</a>
+    </div>
+  </div>
+
+  <script src="../script/script.js"></script>
+  <script>
+    const done = {
+      mouse: false,
+      click: false,
+      right: false,
+      text: false,
+      drag: false,
+      scroll: false,
+      dbl: false
+    };
+
+    const total = Object.keys(done).length;
+    const progressMsg = document.getElementById('progress-msg');
+
+    function atualizarProgresso() {
+      const count = Object.values(done).filter(v => v).length;
+      progressMsg.textContent = `Progresso: ${count} / ${total}`;
+      if (count === total) {
+        const msg = new SpeechSynthesisUtterance("Parabéns! Todas as tarefas foram concluídas.");
+        msg.lang = 'pt-BR';
+        window.speechSynthesis.speak(msg);
+        document.getElementById('next-btn').style.display = 'block';
+      }
+    }
+
+    document.getElementById('end-zone').addEventListener('mouseenter', () => {
+      if (!done.mouse) {
+        done.mouse = true;
+        atualizarProgresso();
+      }
+    });
+
+    document.getElementById('circle').addEventListener('click', () => {
+      if (!done.click) {
+        done.click = true;
+        document.getElementById('circle').classList.add('green');
+        atualizarProgresso();
+      }
+    });
+
+    document.getElementById('right-click-box').addEventListener('contextmenu', e => {
+      e.preventDefault();
+      if (!done.right) {
+        done.right = true;
+        e.target.classList.add('green');
+        atualizarProgresso();
+      }
+    });
+
+    document.addEventListener('selectionchange', () => {
+      const selected = window.getSelection().toString().trim().toLowerCase();
+      if (selected === 'tecnologia' && !done.text) {
+        done.text = true;
+        document.getElementById('tech-text').classList.add('green');
+        atualizarProgresso();
+      }
+    });
+
+    document.getElementById('drag').addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text', 'drag');
+    });
+
+    document.getElementById('drop').addEventListener('dragover', e => e.preventDefault());
+
+    document.getElementById('drop').addEventListener('drop', e => {
+      e.preventDefault();
+      if (!done.drag && e.dataTransfer.getData('text') === 'drag') {
+        done.drag = true;
+        e.target.appendChild(document.getElementById('drag'));
+        atualizarProgresso();
+      }
+    });
+
+    document.getElementById('scroll-area').addEventListener('scroll', () => {
+      const area = document.getElementById('scroll-area');
+      if (area.scrollTop + area.offsetHeight >= area.scrollHeight - 10 && !done.scroll) {
+        done.scroll = true;
+        area.style.borderColor = 'green';
+        atualizarProgresso();
+      }
+    });
+
+    document.getElementById('dbl-btn').addEventListener('dblclick', () => {
+      if (!done.dbl) {
+        done.dbl = true;
+        document.getElementById('dbl-btn').classList.add('green');
+        atualizarProgresso();
+      }
+    });
+
+    document.getElementById('finalizar-btn').addEventListener('click', () => {
+      if (Object.values(done).every(Boolean)) {
+        window.location.href = 'fim.html';
+      } else {
+        const msg = new SpeechSynthesisUtterance("Ainda restam tarefas a serem concluídas.");
+        msg.lang = 'pt-BR';
+        window.speechSynthesis.speak(msg);
+      }
+    });
+
+    const textoIntro = "Bem-vindo à fase final! Complete todas as tarefas: mover o mouse, clicar, clique direito, duplo clique, selecionar texto, arrastar, rolar. Aperte C para finalizar, D para demonstração ou E para ouvir novamente.";
+
+    function speak(text) {
+      const msg = new SpeechSynthesisUtterance(text);
+      msg.lang = 'pt-BR';
+      window.speechSynthesis.speak(msg);
+    }
+
+    ativarAtalhos({
+      textoIntro,
+      aoC: () => {
+        if (Object.values(done).every(Boolean)) {
+          window.location.href = 'fim.html';
+        } else {
+          speak("Ainda há tarefas pendentes.");
+        }
+      },
+      aoD: () => document.getElementById('demo-area').style.display = 'block',
+      aoE: () => speak(textoIntro)
+    });
+
+    document.getElementById('speak-btn').addEventListener('click', () => speak(textoIntro));
+    document.getElementById('demo-btn').addEventListener('click', () => document.getElementById('demo-area').style.display = 'block');
+
+    speak(textoIntro);
+  </script>
+
+</body>
+</html>

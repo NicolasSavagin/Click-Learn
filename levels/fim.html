@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Parabéns!</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #5b86e5, #36d1dc);
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    .final-container {
+      text-align: center;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      animation: bounceIn 1s ease;
+    }
+
+    p {
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .button-group a {
+      text-decoration: none;
+      padding: 15px 30px;
+      background: white;
+      color: #2e7d32;
+      font-weight: bold;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .button-group a:hover {
+      transform: scale(1.05);
+      background: #f0f0f0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="final-container">
+    <h1>Parabéns! 🎉</h1>
+    <p>Você concluiu todas as fases com sucesso!</p>
+
+    <div class="button-group">
+      <a href="level0.html">🔁 Jogar Novamente</a>
+      <a href="../index.html">🏠 Voltar ao Menu</a>
+    </div>
+  </div>
+</body>
+</html>

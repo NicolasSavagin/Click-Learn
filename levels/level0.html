@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level 0 - Siga o Quadrado</title>
+  <link rel="stylesheet" href="../style/levels.css">
+  <style>
+    #next-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    margin-top: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff !important;
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    }
+
+    #next-btn:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: scale(1.05);
+    cursor: pointer;
+    color: #fff !important;
+    }
+    .path {
+      position: relative;
+      width: 90%;
+      height: 300px;
+      margin: 40px auto;
+      background: transparent;
+      border: 3px dashed white;
+      overflow: hidden;
+    }
+
+    .end-zone {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background-color: yellow;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .control-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .control-buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #demo-area {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Fase 0 - Siga o Quadrado</h2>
+    <p>Use o mouse para seguir pela área delimitada até a zona amarela. Repita 5 vezes!</p>
+    Aperte <kbd>E</kbd> para ouvir a explicação.<br>
+    Aperte <kbd>D</kbd> para ver a demonstração.<br>
+    Ao concluir aperte <kbd>C</kbd> para continuar.<br>
+    <div class="path" id="path-area">
+      <div class="end-zone" id="end-zone"></div>
+    </div>
+
+    <p id="progress-msg">Progresso: 0 / 5</p>
+
+    <div class="control-buttons">
+      <button id="speak-btn">🔊 Falar novamente</button>
+      <button id="demo-btn">🎥 Demonstração</button>
+      
+    </div>
+
+    <div id="demo-area">
+      <p>Aqui poderia aparecer uma explicação em vídeo ou animação simples da fase.</p>
+    </div>
+
+    <a href="level1.html" class="next-button" id="next-btn" style="display: none;">Próxima Fase</a>
+  </div>
+
+  <!-- Script de atalhos reutilizável -->
+  <script src="../script/script.js"></script>
+  <script>
+    const endZone = document.getElementById('end-zone');
+    const pathArea = document.getElementById('path-area');
+    const nextBtn = document.getElementById('next-btn');
+    const progressMsg = document.getElementById('progress-msg');
+
+    let count = 0;
+    const total = 5;
+
+    function moveEndZoneRandom() {
+      const maxX = pathArea.offsetWidth - 80;
+      const maxY = pathArea.offsetHeight - 80;
+      const x = Math.floor(Math.random() * maxX);
+      const y = Math.floor(Math.random() * maxY);
+      endZone.style.left = `${x}px`;
+      endZone.style.top = `${y}px`;
+    }
+
+    endZone.addEventListener('mouseenter', () => {
+      if (count >= total) return;
+      count++;
+      progressMsg.textContent = `Progresso: ${count} / ${total}`;
+
+      if (count >= total) {
+        const msg = new SpeechSynthesisUtterance("Ótimo trabalho! Você concluiu a trilha com o mouse. Vamos para a próxima fase!");
+        msg.lang = 'pt-BR';
+        window.speechSynthesis.speak(msg);
+        nextBtn.style.display = 'inline-block';
+      } else {
+        const msg = new SpeechSynthesisUtterance(`Muito bem! Restam ${total - count} tentativas.`);
+        msg.lang = 'pt-BR';
+        window.speechSynthesis.speak(msg);
+        moveEndZoneRandom();
+      }
+    });
+
+    moveEndZoneRandom();
+
+    const textoIntro = "Nesta fase, use o mouse para seguir o caminho até a zona amarela. Faça isso 5 vezes para avançar. " +
+      "Aperte C para ir para a próxima fase, D para ver uma demonstração ou E para ouvir esta explicação novamente.";
+
+    ativarAtalhos({
+      textoIntro,
+      aoC: () => {
+        if (count >= total) nextBtn.click();
+        else {
+          const msg = new SpeechSynthesisUtterance("Você precisa completar a fase antes de avançar.");
+          msg.lang = 'pt-BR';
+          window.speechSynthesis.speak(msg);
+        }
+      },
+      aoD: () => {
+        document.getElementById('demo-area').style.display = 'block';
+      },
+      aoE: () => speak(textoIntro)
+    });
+  </script>
+</body>
+</html>

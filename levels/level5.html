@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Level 5 - Arrastar e Soltar</title>
+  <link rel="stylesheet" href="../style/levels.css"/>
+  <style>
+    #next-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    margin-top: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff !important;
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    }
+
+    #next-btn:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: scale(1.05);
+    cursor: pointer;
+    color: #fff !important;
+    }
+    #game-area {
+      position: relative;
+      width: 90%;
+      height: 300px;
+      margin: 40px auto;
+      background: transparent;
+      border: 3px dashed white;
+      overflow: hidden;
+    }
+
+    .draggable {
+      width: 80px;
+      height: 80px;
+      background-color: dodgerblue;
+      position: absolute;
+      cursor: grab;
+      border-radius: 10px;
+    }
+
+    .dropzone {
+      width: 100px;
+      height: 100px;
+      background-color: limegreen;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      border-radius: 12px;
+      border: 3px solid white;
+    }
+
+    .control-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .control-buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #demo-area {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Fase 5 - Arraste o quadrado azul até a área verde</h2>
+    <p>Arraste e solte o quadrado azul dentro da área verde. Progresso: <span id="score">0</span>/5</p>
+    Aperte <kbd>E</kbd> para ouvir a explicação.<br>
+    Aperte <kbd>D</kbd> para ver a demonstração.<br>
+    Ao concluir aperte <kbd>C</kbd> para continuar.<br>
+
+    <div id="game-area">
+      <div class="dropzone" id="dropzone"></div>
+    </div>
+
+    <div id="demo-area">
+      <p>Você deve clicar, segurar o quadrado azul e soltá-lo sobre a área verde.</p>
+    </div>
+
+    <div class="control-buttons">
+      <button id="speak-btn">🔊 Falar novamente</button>
+      <button id="demo-btn">🎥 Demonstração</button>
+    </div>
+
+    <a href="level6.html" class="next-button" id="next-btn" style="display: none;">Próxima Fase</a>
+  </div>
+
+  <script src="../script/script.js"></script>
+  <script>
+    const gameArea = document.getElementById("game-area");
+    const dropzone = document.getElementById("dropzone");
+    const scoreDisplay = document.getElementById("score");
+    const nextBtn = document.getElementById("next-btn");
+    let score = 0;
+    const total = 5;
+    let bloqueado = false;
+  
+    function spawnDraggable() {
+      if (bloqueado) return;
+  
+      const box = document.createElement("div");
+      box.classList.add("draggable");
+      positionRandomly(box);
+  
+      let offsetX = 0;
+      let offsetY = 0;
+      let dragging = false;
+  
+      box.addEventListener("mousedown", (e) => {
+        dragging = true;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+        box.style.cursor = "grabbing"; // Mudança no cursor
+      });
+  
+      document.addEventListener("mousemove", (e) => {
+        if (dragging) {
+          box.style.left = `${e.pageX - gameArea.offsetLeft - offsetX}px`;
+          box.style.top = `${e.pageY - gameArea.offsetTop - offsetY}px`;
+        }
+      });
+  
+      document.addEventListener("mouseup", () => {
+        if (dragging) {
+          dragging = false;
+          box.style.cursor = "grab"; // Restaurando o cursor
+  
+          // Verifica se o quadrado foi solto dentro da área verde
+          if (isOverlapping(box, dropzone)) {
+            score++;
+            speak(`Muito bem! Restam ${total - score}`);
+            scoreDisplay.textContent = score;
+            gameArea.removeChild(box);
+  
+            if (score >= total) {
+              speak("Excelente! Você concluiu a fase de arrastar e soltar.");
+              bloqueado = true;
+              nextBtn.style.display = 'inline-block'; // Mostra o botão "Próxima Fase"
+            } else {
+              setTimeout(spawnDraggable, 1000); // Cria outro quadrado após um tempo
+            }
+          } else {
+            speak("Ops! Você precisa soltar dentro da área verde.");
+          }
+        }
+      });
+  
+      gameArea.appendChild(box); // Adiciona o quadrado à área do jogo
+    }
+  
+    function positionRandomly(el) {
+      const maxX = gameArea.offsetWidth - 80;
+      const maxY = gameArea.offsetHeight - 80;
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    }
+  
+    function isOverlapping(el1, el2) {
+      const r1 = el1.getBoundingClientRect();
+      const r2 = el2.getBoundingClientRect();
+      return !(
+        r1.right < r2.left ||
+        r1.left > r2.right ||
+        r1.bottom < r2.top ||
+        r1.top > r2.bottom
+      );
+    }
+  
+    const textoIntro = "Nesta fase, clique e segure o quadrado azul, arraste até a área verde e solte. Repita isso 5 vezes para continuar. Aperte C para avançar, D para demonstração ou E para ouvir novamente.";
+  
+    ativarAtalhos({
+      textoIntro,
+      aoC: () => {
+        if (score >= total) nextBtn.click();
+        else speak("Você precisa completar a fase antes de avançar.");
+      },
+      aoD: () => {
+        document.getElementById('demo-area').style.display = 'block';
+      },
+      aoE: () => speak(textoIntro)
+    });
+  
+    spawnDraggable();
+  </script>
+</body>
+</html>

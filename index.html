@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Click&Learn</title>
+  <link rel="stylesheet" href="style/style.css" />
+</head>
+<body>
+  <div class="container">
+    <img class="logo" src="assets/images/CLICK.png">
+    <button id="speak-btn" class="start-button">🔊 Ouvir Explicação</button>
+    <button id="demo-btn" class="start-button">🎬 Ver Demonstração</button>
+
+    <div id="demo-area" class="demo-area" style="display: none;">
+      <div id="demo-wrapper" class="demo-wrapper">
+        <img src="assets/images/mouse-animation.gif" alt="Demonstração do mouse" class="mouse-demo" id="mouse-img">
+      </div>
+      <p>Observe como o mouse se move pela tela.</p>
+    </div>
+
+    <a href="levels/level0.html" class="start-button" id="start-game">✅ Começar o Jogo</a>
+  </div>
+
+  <script src="script/script.js"></script>
+  <script>
+    const textoIntro = "Olá! Bem-vindo à Click and Learn. Aqui, você vai aprender a usar o mouse passo a passo. " +
+    "Primeiro, vamos apenas mover o mouse pela tela. Depois, você vai aprender a clicar, arrastar e muito mais. " +
+    "Aperte C para começar, D para ver uma demonstração ou E para ouvir esta explicação novamente.";
+    ativarAtalhos({
+    textoIntro,
+    aoC: () => {
+      const startBtn = document.getElementById('start-game');
+      if (startBtn) window.location.href = startBtn.href;
+    },
+    aoD: () => {
+      const demoArea = document.getElementById('demo-area');
+      if (demoArea) demoArea.style.display = 'block';
+    },
+    aoE: () => speak(textoIntro)
+  });
+  </script>
+
+</body>
+</html>

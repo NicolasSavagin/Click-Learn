@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Level 4 - Clique com o Botão Direito</title>
+  <link rel="stylesheet" href="../style/levels.css"/>
+  <style>
+    #next-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    margin-top: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff !important;
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    }
+
+    #next-btn:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: scale(1.05);
+    cursor: pointer;
+    color: #fff !important;
+    }
+    #game-area {
+      position: relative;
+      width: 90%;
+      height: 300px;
+      margin: 40px auto;
+      background: transparent;
+      border: 3px dashed white;
+      overflow: hidden;
+    }
+
+    .right-click-box {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background-color: purple;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .control-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .control-buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #demo-area {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Fase 4 - Clique com o botão direito</h2>
+    <p>Clique com o botão <strong>direito</strong> do mouse no quadrado roxo. Progresso: <span id="score">0</span> / 5</p>
+    Aperte <kbd>E</kbd> para ouvir a explicação.<br>
+    Aperte <kbd>D</kbd> para ver a demonstração.<br>
+    Ao concluir aperte <kbd>C</kbd> para continuar.<br>
+
+    <div id="game-area"></div>
+
+    <div id="demo-area">
+      <p>Use o botão direito do mouse (aquele que abre menus) para clicar no quadrado roxo.</p>
+    </div>
+
+    <div class="control-buttons">
+      <button id="speak-btn">🔊 Falar novamente</button>
+      <button id="demo-btn">🎥 Demonstração</button>
+    </div>
+
+    <a href="level5.html" class="next-button" id="next-btn" style="display: none;">Próxima Fase</a>
+  </div>
+
+  <!-- Script de atalhos reutilizável -->
+  <script src="../script/script.js"></script>
+  <script>
+    const gameArea = document.getElementById('game-area');
+    const scoreDisplay = document.getElementById('score');
+    const nextBtn = document.getElementById('next-btn');
+    let score = 0;
+    const total = 5;
+    let bloqueado = false;
+
+    function spawnBox() {
+      if (bloqueado) return;
+
+      gameArea.innerHTML = '';
+
+      const box = document.createElement('div');
+      box.classList.add('right-click-box');
+      positionRandomly(box);
+
+      // Clique com botão direito
+      box.addEventListener('contextmenu', (e) => {
+        e.preventDefault(); // evita abrir menu
+        if (bloqueado) return;
+        score++;
+        scoreDisplay.textContent = score;
+        speak(`Certo! Faltam ${total - score}`);
+        if (score >= total) {
+          speak("Excelente! Você concluiu a fase do clique direito!");
+          bloqueado = true;
+          nextBtn.style.display = 'inline-block';
+        } else {
+          setTimeout(spawnBox, 800);
+        }
+      });
+
+      // Clique esquerdo = erro
+      box.addEventListener('click', () => {
+        if (bloqueado) return;
+        speak("Esse é o botão errado. Use o botão direito do mouse.");
+      });
+
+      gameArea.appendChild(box);
+    }
+
+    function positionRandomly(el) {
+      const maxX = gameArea.offsetWidth - 80;
+      const maxY = gameArea.offsetHeight - 80;
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    }
+
+    const textoIntro = "Nesta fase, você deve clicar com o botão direito do mouse no quadrado roxo. Repita isso 5 vezes. Se clicar com o botão esquerdo, não contará. Use o botão da direita. Aperte C para ir para a próxima fase, D para ver uma demonstração ou E para ouvir novamente.";
+
+    ativarAtalhos({
+      textoIntro,
+      aoC: () => {
+        if (score >= total) nextBtn.click();
+        else speak("Você precisa completar a fase antes de avançar.");
+      },
+      aoD: () => {
+        document.getElementById('demo-area').style.display = 'block';
+      },
+      aoE: () => speak(textoIntro)
+    });
+
+    spawnBox();
+  </script>
+</body>
+</html>

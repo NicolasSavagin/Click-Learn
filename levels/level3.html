@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Level 3 - Clique no Elemento Correto</title>
+  <link rel="stylesheet" href="../style/levels.css"/>
+  <style>
+    #next-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    margin-top: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff !important;
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    }
+
+    #next-btn:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    transform: scale(1.05);
+    cursor: pointer;
+    color: #fff !important;
+    }
+    #game-area {
+      position: relative;
+      width: 90%;
+      height: 300px;
+      margin: 40px auto;
+      background: transparent;
+      border: 3px dashed white;
+      overflow: hidden;
+    }
+
+    .element {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      cursor: pointer;
+      border-radius: 10px;
+      user-select: none;
+    }
+
+    .target {
+      background-color: green;
+      color: white;
+    }
+
+    .distractor {
+      background-color: gray;
+      color: black;
+    }
+
+    .control-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .control-buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #demo-area {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+      color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Fase 3 - Clique apenas nas estrelas verdes!</h2>
+    <p>Procure e clique na <strong>única estrela verde</strong> ⭐. Evite os outros símbolos. Acertos: <span id="score">0</span> / 5</p>
+    Aperte <kbd>E</kbd> para ouvir a explicação.<br>
+    Aperte <kbd>D</kbd> para ver a demonstração.<br>
+    Ao concluir aperte <kbd>C</kbd> para continuar.<br>
+
+    <div id="game-area"></div>
+
+    <div id="demo-area">
+      <p>Exemplo: clique apenas na estrela ⭐ verde. Ignore símbolos como 🔺, ❌, ⚪, 💧.</p>
+    </div>
+
+    <div class="control-buttons">
+      <button id="speak-btn">🔊 Falar novamente</button>
+      <button id="demo-btn">🎥 Demonstração</button>
+    </div>
+
+    <a href="level4.html" class="next-button" id="next-btn" style="display: none;">Próxima Fase</a>
+  </div>
+
+  <!-- Script de atalhos reutilizável -->
+  <script src="../script/script.js"></script>
+  <script>
+    const gameArea = document.getElementById('game-area');
+    const scoreDisplay = document.getElementById('score');
+    const nextBtn = document.getElementById('next-btn');
+    let score = 0;
+    const total = 5;
+    let bloqueado = false;
+
+    const distractorSymbols = ['🔺', '⚪', '❌', '💧', '🍀', '🐾', '🌀'];
+
+    function spawnElements() {
+      if (bloqueado) return;
+
+      gameArea.innerHTML = '';
+
+      // Cria estrela verde (correta)
+      const star = document.createElement('div');
+      star.classList.add('element', 'target');
+      star.textContent = '⭐';
+      positionRandomly(star);
+      star.addEventListener('click', () => {
+        if (bloqueado) return;
+
+        score++;
+        scoreDisplay.textContent = score;
+        speak(`Acerto! Faltam ${total - score}`);
+        if (score >= total) {
+          speak("Parabéns! Você concluiu a fase!");
+          bloqueado = true;
+          nextBtn.style.display = 'inline-block';
+        } else {
+          setTimeout(spawnElements, 800);
+        }
+      });
+      gameArea.appendChild(star);
+
+      // Cria de 6 a 10 elementos distratores
+      const distractorCount = Math.floor(Math.random() * 5) + 15;
+      for (let i = 0; i < distractorCount; i++) {
+        const el = document.createElement('div');
+        el.classList.add('element', 'distractor');
+        el.textContent = distractorSymbols[Math.floor(Math.random() * distractorSymbols.length)];
+        positionRandomly(el);
+        el.addEventListener('click', () => {
+          if (bloqueado) return;
+
+          if (score > 0) score--;
+          scoreDisplay.textContent = score;
+          speak("Ops, símbolo errado! Você perdeu um ponto.");
+        });
+        gameArea.appendChild(el);
+      }
+    }
+
+    function positionRandomly(el) {
+      const maxX = gameArea.offsetWidth - 60;
+      const maxY = gameArea.offsetHeight - 60;
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    }
+
+    const textoIntro = "Clique apenas na estrela verde entre os vários símbolos. Cuidado! Se clicar no símbolo errado, você perde um ponto. Faça 5 acertos para vencer. Aperte C para continuar, D para ver a demonstração ou E para ouvir novamente.";
+
+    ativarAtalhos({
+      textoIntro,
+      aoC: () => {
+        if (score >= total) nextBtn.click();
+        else speak("Você precisa completar a fase antes de avançar.");
+      },
+      aoD: () => {
+        document.getElementById('demo-area').style.display = 'block';
+      },
+      aoE: () => speak(textoIntro)
+    });
+
+    spawnElements();
+  </script>
+</body>
+</html>
